@@ -19,8 +19,8 @@ static char *page_buffer_next = page_buffer;
 typedef struct {
     unsigned mode;
     unsigned levels;
-    unsigned ppn_width_bits[5];
-    unsigned ppn_offset_bits[5];
+    unsigned ppn_width_bits[6];
+    unsigned ppn_offset_bits[6];
     unsigned entry_width_bytes;
     unsigned vpn_width_bits;
     unsigned vaddr_bits;
@@ -54,6 +54,16 @@ static virtual_memory_system_t sv48 = {
     .entry_width_bytes = 8,
     .vpn_width_bits = 9,
     .vaddr_bits = 48
+};
+
+static virtual_memory_system_t sv57 = {
+    .mode = SATP_MODE_SV57,
+    .levels = 5,
+    .ppn_width_bits = {12, 9, 9, 9, 9, 8},
+    .ppn_offset_bits = {0, 12, 21, 30, 39, 48},
+    .entry_width_bytes = 8,
+    .vpn_width_bits = 9,
+    .vaddr_bits = 57
 };
 
 static virtual_memory_system_t *vms;
@@ -121,7 +131,7 @@ unsigned vpn(uint64_t virtual, unsigned level)
     virtual >>= 12 + vms->vpn_width_bits * level;
     return virtual & ((1<<vms->vpn_width_bits)-1);
 }
- 
+
 // Add an entry to the given table, at the given level (0 for 4Kb page).
 void add_entry(char *table, unsigned level, uint64_t virtual, uint64_t physical)
 {

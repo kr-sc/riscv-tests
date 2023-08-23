@@ -1706,6 +1706,15 @@ class Sv48Test(TranslateTest):
         self.gdb.p("vms=&sv48")
         self.test_translation()
 
+class Sv57Test(TranslateTest):
+    def early_applicable(self):
+        return TranslateTest.early_applicable(self) and self.hart.xlen > 32
+
+    def test(self):
+        self.check_satp(SATP_MODE_SV57)
+        self.gdb.p("vms=&sv57")
+        self.test_translation()
+
 class VectorTest(GdbSingleHartTest):
     compile_args = ("programs/vectors.S", )
 
